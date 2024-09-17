@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TD 4 - Dessin avec Événements Tactiles</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #info {
+            margin-bottom: 20px;
+        }
+
+        #drawingArea {
+            border: 2px solid #4a90e2;
+            border-radius: 10px;
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        .coordinates {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dessin avec Événements Tactiles</h1>
+        <div id="info">
+            <p><strong>Type d'événement : </strong><span id="eventType">Aucun</span></p>
+            <p class="coordinates"><strong>Position X : </strong><span id="posX">0</span></p>
+            <p class="coordinates"><strong>Position Y : </strong><span id="posY">0</span></p>
+        </div>
+        <button id="Clear" onclick="clearDrawing()">Effacer</button>
+        <div id="drawingArea"></div>
+    </div>
+
+    <script>
+        const drawingArea = document.getElementById('drawingArea');
+        const posXElement = document.getElementById('posX');
+        const posYElement = document.getElementById('posY');
+        const eventTypeElement = document.getElementById('eventType');
+
+        let isDrawing = false;
+
+        function updateInfo(event) {
+            const rect = drawingArea.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            posXElement.textContent = x.toFixed(2);
+            posYElement.textContent = y.toFixed(2);
+            eventTypeElement.textContent = event.type;
+        }
+
+        function startDrawing(event) {
+            updateInfo(event);
+            isDrawing = true;
+            event.preventDefault();
+        }
+
+        function clearDrawing() {
+            const drawingArea = document.getElementById('drawingArea');
+            drawingArea.innerHTML = '';
+        }
+
+
+        function draw(event) {
+            if (!isDrawing) return;
+            updateInfo(event);
+
+            const rect = drawingArea.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const dot = document.createElement('div');
+            dot.style.position = 'absolute';
+            dot.style.width = '5px';
+            dot.style.height = '5px';
+            dot.style.backgroundColor = '#4a90e2';
+            dot.style.borderRadius = '50%';
+            dot.style.left = `${x}px`;
+            dot.style.top = `${y}px`;
+
+            drawingArea.appendChild(dot);
+            event.preventDefault();
+        }
+
+        function stopDrawing(event) {
+            isDrawing = false;
+            event.preventDefault();
+        }
+
+        drawingArea.addEventListener('mousedown', startDrawing);
+        drawingArea.addEventListener('mousemove', draw);
+        drawingArea.addEventListener('mouseup', stopDrawing);
+
+        // Pour les événements tactiles
+        drawingArea.addEventListener('touchstart', startDrawing);
+        drawingArea.addEventListener('touchmove', draw);
+        drawingArea.addEventListener('touchend', stopDrawing);
+    </script>
+</body>
+</html>
