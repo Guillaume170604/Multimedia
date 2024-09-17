@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TD 3 - Orientation et Mouvement</title>
-    <link rel="stylesheet" href="css/style.css">
     <style>
 
         body {
@@ -71,15 +70,18 @@
             <p><strong>Accélération en Rotation autour de Y : </strong><span id="rotation-y">0</span>°/s</p>
             <p><strong>Accélération en Rotation autour de Z : </strong><span id="rotation-z">0</span>°/s</p>
         </div>
+        <button id="Demarrer" onclick="checkDeviceMotion()">Démarrer</button>
     </div>
 
     <script>
+        // Fonction pour gérer les données de DeviceOrientation
         function handleOrientation(event) {
             document.getElementById('alpha').textContent = event.alpha.toFixed(2);
             document.getElementById('beta').textContent = event.beta.toFixed(2);
             document.getElementById('gamma').textContent = event.gamma.toFixed(2);
         }
 
+        // Fonction pour gérer les données de DeviceMotion
         function handleMotion(event) {
             const accel = event.accelerationIncludingGravity;
             const rot = event.rotationRate;
@@ -93,18 +95,36 @@
             document.getElementById('rotation-z').textContent = (rot.gamma || 0).toFixed(2);
         }
 
-        // Vérifie si l'API est supportée
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', handleOrientation);
-        } else {
-            alert('DeviceOrientationEvent n\'est pas supporté par ce navigateur.');
+        // Fonction pour demander la permission
+        function requestPermission() {
+            if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                        } else {
+                            alert('Permission refusée pour DeviceOrientation.');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Pour les navigateurs qui ne nécessitent pas de permission explicite
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
         }
 
-        if (window.DeviceMotionEvent) {
-            window.addEventListener('devicemotion', handleMotion);
-        } else {
-            alert('DeviceMotionEvent n\'est pas supporté par ce navigateur.');
+        // Fonction pour vérifier la disponibilité de DeviceMotion
+        function checkDeviceMotion() {
+            if (window.DeviceMotionEvent) {
+                window.addEventListener('devicemotion', handleMotion);
+            } else {
+                alert('DeviceMotionEvent n\'est pas supporté par ce navigateur.');
+            }
         }
+
+        // Ajouter l'événement de clic pour le bouton de permission
+        document.getElementById('request-permission').addEventListener('click', requestPermission);
+        
     </script>
 </body>
 </html>
