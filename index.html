@@ -5,16 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu des TDs</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        a {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5em;
+
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cours-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background-color: #357ab7;
+        }
+
+        
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Choisissez un Cours ou un TD</h1>
-        <div class="button-container">
-            <button onclick="location.href='cours1.html'">Cours 1</button>
-            <button onclick="location.href='td1.html'">TD 1</button>
-            <button onclick="location.href='td2.html'">TD 2</button>
-            <button onclick="location.href='td3.html'">TD 3</button>
-            <button onclick="location.href='td4.html'">TD 4</button>
+        <h1>Exercices du cours Multemedia</h1>
+        <div class="cours-container">
+            <div class="button-container">
+                <a>Cours 1</a>
+                <button onclick="location.href='td1.html'">TD 1</button>
+                <button onclick="location.href='td2.html'">TD 2</button>
+                <button onclick="location.href='td3.html'">TD 3</button>
+                <button onclick="location.href='td4.html'">TD 4</button>
+            </div>
+            <div class="button-container">
+                <a>Cours 2</a>
+                <button>En construction...</button>
+
+            </div>
+            <div class="button-container">
+                <a>Cours 3</a>
+                <button>En construction...</button>
+
+            </div>
         </div>
     </div>
 </body>

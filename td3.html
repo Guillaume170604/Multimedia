@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TD 3 - Orientation et Mouvement</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+       
+
+        .info {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TD 3 : Orientation et Mouvement</h1>
+        <div class="info">
+            <h2>Orientation du Smartphone</h2>
+            <p><strong>Alpha (rotation autour de Z) : </strong><span id="alpha">0</span>°</p>
+            <p><strong>Beta (rotation autour de X) : </strong><span id="beta">0</span>°</p>
+            <p><strong>Gamma (rotation autour de Y) : </strong><span id="gamma">0</span>°</p>
+        </div>
+        <div class="info">
+            <h2>Mouvement du Smartphone</h2>
+            <p><strong>Accélération en X : </strong><span id="acceleration-x">0</span> m/s²</p>
+            <p><strong>Accélération en Y : </strong><span id="acceleration-y">0</span> m/s²</p>
+            <p><strong>Accélération en Z : </strong><span id="acceleration-z">0</span> m/s²</p>
+            <p><strong>Accélération en Rotation autour de X : </strong><span id="rotation-x">0</span>°/s</p>
+            <p><strong>Accélération en Rotation autour de Y : </strong><span id="rotation-y">0</span>°/s</p>
+            <p><strong>Accélération en Rotation autour de Z : </strong><span id="rotation-z">0</span>°/s</p>
+        </div>
+    </div>
+
+    <script>
+        function handleOrientation(event) {
+            document.getElementById('alpha').textContent = event.alpha.toFixed(2);
+            document.getElementById('beta').textContent = event.beta.toFixed(2);
+            document.getElementById('gamma').textContent = event.gamma.toFixed(2);
+        }
+
+        function handleMotion(event) {
+            const accel = event.accelerationIncludingGravity;
+            const rot = event.rotationRate;
+
+            document.getElementById('acceleration-x').textContent = (accel.x || 0).toFixed(2);
+            document.getElementById('acceleration-y').textContent = (accel.y || 0).toFixed(2);
+            document.getElementById('acceleration-z').textContent = (accel.z || 0).toFixed(2);
+
+            document.getElementById('rotation-x').textContent = (rot.alpha || 0).toFixed(2);
+            document.getElementById('rotation-y').textContent = (rot.beta || 0).toFixed(2);
+            document.getElementById('rotation-z').textContent = (rot.gamma || 0).toFixed(2);
+        }
+
+        // Vérifie si l'API est supportée
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', handleOrientation);
+        } else {
+            alert('DeviceOrientationEvent n\'est pas supporté par ce navigateur.');
+        }
+
+        if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', handleMotion);
+        } else {
+            alert('DeviceMotionEvent n\'est pas supporté par ce navigateur.');
+        }
+    </script>
+</body>
+</html>
