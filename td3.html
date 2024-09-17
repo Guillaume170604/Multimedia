@@ -70,7 +70,7 @@
             <p><strong>Accélération en Rotation autour de Y : </strong><span id="rotation-y">0</span>°/s</p>
             <p><strong>Accélération en Rotation autour de Z : </strong><span id="rotation-z">0</span>°/s</p>
         </div>
-        <button id="Demarrer" onclick="checkDeviceMotion()">Démarrer</button>
+        <button id="Demarrer" onclick="requestPermission()">Démarrer</button>
     </div>
 
     <script>
@@ -122,8 +122,8 @@
             }
         }
 
-        // Ajouter l'événement de clic pour le bouton de permission
-        document.getElementById('request-permission').addEventListener('click', requestPermission);
+        checkDeviceMotion();
+       
         
     </script>
 </body>
