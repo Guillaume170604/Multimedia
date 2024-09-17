@@ -1,12 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site Web</title>
+    <title>Affichage de la position</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+        }
+        .info {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bienvenue sur mon site GitHub Pages !</h1>
-    <p>Ceci est ma première page web hébergée sur GitHub. TEST</p>
+    <h1>Affichage de ma position en temps réel</h1>
+
+    <div class="info">
+        <h2>Position initiale (getCurrentPosition)</h2>
+        <p><strong>Latitude : </strong><span id="lat-initial"></span></p>
+        <p><strong>Longitude : </strong><span id="long-initial"></span></p>
+        <p><strong>Altitude : </strong><span id="alt-initial"></span></p>
+        <p><strong>Précision : </strong><span id="accuracy-initial"></span> mètres</p>
+        <p><strong>Vitesse : </strong><span id="speed-initial"></span> m/s</p>
+        <p><strong>Date : </strong><span id="timestamp-initial"></span></p>
+    </div>
+
+    <div class="info">
+        <h2>Position en temps réel (watchPosition)</h2>
+        <p><strong>Latitude : </strong><span id="lat-realtime"></span></p>
+        <p><strong>Longitude : </strong><span id="long-realtime"></span></p>
+        <p><strong>Altitude : </strong><span id="alt-realtime"></span></p>
+        <p><strong>Précision : </strong><span id="accuracy-realtime"></span> mètres</p>
+        <p><strong>Vitesse : </strong><span id="speed-realtime"></span> m/s</p>
+        <p><strong>Date : </strong><span id="timestamp-realtime"></span></p>
+    </div>
+
+    <script>
+        // Vérifier si la géolocalisation est disponible
+        if (navigator.geolocation) {
+            // Fonction de succès pour getCurrentPosition
+            function showInitialPosition(position) {
+                document.getElementById('lat-initial').textContent = position.coords.latitude;
+                document.getElementById('long-initial').textContent = position.coords.longitude;
+                document.getElementById('alt-initial').textContent = position.coords.altitude ? position.coords.altitude : 'Non disponible';
+                document.getElementById('accuracy-initial').textContent = position.coords.accuracy;
+                document.getElementById('speed-initial').textContent = position.coords.speed ? position.coords.speed : 'Non disponible';
+                
+                // Convertir le timestamp en date lisible
+                const date = new Date(position.timestamp);
+                document.getElementById('timestamp-initial').textContent = date.toLocaleString();
+            }
+
+            // Fonction de succès pour watchPosition
+            function updateRealTimePosition(position) {
+                document.getElementById('lat-realtime').textContent = position.coords.latitude;
+                document.getElementById('long-realtime').textContent = position.coords.longitude;
+                document.getElementById('alt-realtime').textContent = position.coords.altitude ? position.coords.altitude : 'Non disponible';
+                document.getElementById('accuracy-realtime').textContent = position.coords.accuracy;
+                document.getElementById('speed-realtime').textContent = position.coords.speed ? position.coords.speed : 'Non disponible';
+
+                // Convertir le timestamp en date lisible
+                const date = new Date(position.timestamp);
+                document.getElementById('timestamp-realtime').textContent = date.toLocaleString();
+            }
+
+            // Fonction d'erreur
+            function showError(error) {
+                alert("Erreur de géolocalisation : " + error.message);
+            }
+
+            // Appel à getCurrentPosition (pour obtenir une position initiale)
+            navigator.geolocation.getCurrentPosition(showInitialPosition, showError);
+
+            // Appel à watchPosition (pour mettre à jour la position en temps réel)
+            navigator.geolocation.watchPosition(updateRealTimePosition, showError);
+        } else {
+            alert("La géolocalisation n'est pas supportée par ce navigateur.");
+        }
+    </script>
 </body>
 </html>
