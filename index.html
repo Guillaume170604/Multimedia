@@ -5,38 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Affichage de la position</title>
     <style>
+        /* Corps de la page */
         body {
-            font-family: Arial, sans-serif;
-        }
-        h1 {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
             color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
         }
-        .info {
+
+        /* Container principal */
+        .container {
+            background-color: #fff;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        /* Titre principal */
+        h1 {
+            font-size: 2.2em;
+            color: #4a90e2;
             margin-bottom: 20px;
         }
+
+        /* Sous-titres */
+        h2 {
+            font-size: 1.4em;
+            color: #4a90e2;
+            margin-bottom: 15px;
+        }
+
+        /* Style des sections d'informations */
+        .info {
+            margin-bottom: 30px;
+        }
+
+        /* Style des informations */
+        p {
+            font-size: 1.1em;
+            margin: 5px 0;
+            color: #555;
+        }
+
+        /* Style des valeurs (résultats) */
+        span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Boutons */
+        button {
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357ab7;
+        }
+
+        /* Animation de chargement */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .loading .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4a90e2;
+            border-radius: 50%;
+            margin: 0 4px;
+            animation: bounce 1.2s infinite ease-in-out both;
+        }
+
+        .loading .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(0);
+            } 
+            50% {
+                transform: scale(1);
+            }
+        }
+
     </style>
 </head>
 <body>
-    <h1>Affichage de ma position en temps réel</h1>
 
-    <div class="info">
-        <h2>Position initiale (getCurrentPosition)</h2>
-        <p><strong>Latitude : </strong><span id="lat-initial"></span></p>
-        <p><strong>Longitude : </strong><span id="long-initial"></span></p>
-        <p><strong>Altitude : </strong><span id="alt-initial"></span></p>
-        <p><strong>Précision : </strong><span id="accuracy-initial"></span> mètres</p>
-        <p><strong>Vitesse : </strong><span id="speed-initial"></span> m/s</p>
-        <p><strong>Date : </strong><span id="timestamp-initial"></span></p>
-    </div>
+    <div class="container">
+        <h1>Position Géographique</h1>
 
-    <div class="info">
-        <h2>Position en temps réel (watchPosition)</h2>
-        <p><strong>Latitude : </strong><span id="lat-realtime"></span></p>
-        <p><strong>Longitude : </strong><span id="long-realtime"></span></p>
-        <p><strong>Altitude : </strong><span id="alt-realtime"></span></p>
-        <p><strong>Précision : </strong><span id="accuracy-realtime"></span> mètres</p>
-        <p><strong>Vitesse : </strong><span id="speed-realtime"></span> m/s</p>
-        <p><strong>Date : </strong><span id="timestamp-realtime"></span></p>
+        <div class="info">
+            <h2>Position Initiale (getCurrentPosition)</h2>
+            <p><strong>Latitude : </strong><span id="lat-initial"></span></p>
+            <p><strong>Longitude : </strong><span id="long-initial"></span></p>
+            <p><strong>Altitude : </strong><span id="alt-initial"></span></p>
+            <p><strong>Précision : </strong><span id="accuracy-initial"></span> mètres</p>
+            <p><strong>Vitesse : </strong><span id="speed-initial"></span> m/s</p>
+            <p><strong>Date : </strong><span id="timestamp-initial"></span></p>
+        </div>
+
+        <div class="info">
+            <h2>Position en Temps Réel (watchPosition)</h2>
+            <p><strong>Latitude : </strong><span id="lat-realtime"></span></p>
+            <p><strong>Longitude : </strong><span id="long-realtime"></span></p>
+            <p><strong>Altitude : </strong><span id="alt-realtime"></span></p>
+            <p><strong>Précision : </strong><span id="accuracy-realtime"></span> mètres</p>
+            <p><strong>Vitesse : </strong><span id="speed-realtime"></span> m/s</p>
+            <p><strong>Date : </strong><span id="timestamp-realtime"></span></p>
+        </div>
+
+        <div class="loading">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
     </div>
 
     <script>
@@ -50,7 +157,6 @@
                 document.getElementById('accuracy-initial').textContent = position.coords.accuracy;
                 document.getElementById('speed-initial').textContent = position.coords.speed ? position.coords.speed : 'Non disponible';
                 
-                // Convertir le timestamp en date lisible
                 const date = new Date(position.timestamp);
                 document.getElementById('timestamp-initial').textContent = date.toLocaleString();
             }
@@ -63,7 +169,6 @@
                 document.getElementById('accuracy-realtime').textContent = position.coords.accuracy;
                 document.getElementById('speed-realtime').textContent = position.coords.speed ? position.coords.speed : 'Non disponible';
 
-                // Convertir le timestamp en date lisible
                 const date = new Date(position.timestamp);
                 document.getElementById('timestamp-realtime').textContent = date.toLocaleString();
             }
@@ -73,10 +178,10 @@
                 alert("Erreur de géolocalisation : " + error.message);
             }
 
-            // Appel à getCurrentPosition (pour obtenir une position initiale)
+            // Appel à getCurrentPosition (position initiale)
             navigator.geolocation.getCurrentPosition(showInitialPosition, showError);
 
-            // Appel à watchPosition (pour mettre à jour la position en temps réel)
+            // Appel à watchPosition (position en temps réel)
             navigator.geolocation.watchPosition(updateRealTimePosition, showError);
         } else {
             alert("La géolocalisation n'est pas supportée par ce navigateur.");
