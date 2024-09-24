@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 2 - Leaflet plus</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <p>Distance entre Marseille et votre position : <span id="distance"></span> km</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialiser la carte
+            const map = L.map('map').setView([43.2965, 5.3698], 5); // Centré initialement sur Marseille
+
+            // Changer la carte de fond avec Stamen Maps
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & CartoDB'
+            }).addTo(map);
+
+
+            // Tracer le Triangle des Bermudes (en rouge)
+            const triangleBermudes = [
+                [25.7743, -80.1937], // Miami
+                [18.4663, -66.1183], // Porto Rico
+                [32.3214, -64.7574]  // Bermudes
+            ];
+            L.polygon(triangleBermudes, {color: 'red'}).addTo(map).bindPopup('Triangle des Bermudes');
+
+            // Ajouter un marqueur à Nice
+            const niceLatLng = [43.7102, 7.2620];
+            L.marker(niceLatLng).addTo(map).bindPopup("Nice");
+
+            // Ajouter un marqueur à Marseille
+            const marseilleLatLng = [43.2965, 5.3698];
+            const marseilleMarker = L.marker(marseilleLatLng).addTo(map).bindPopup("Marseille");
+
+            // Tracer un segment entre Marseille et Nice
+            const lineMarseilleNice = [
+                marseilleLatLng,
+                niceLatLng
+            ];
+            L.polyline(lineMarseilleNice, {color: 'blue'}).addTo(map);
+
+            // Fonction pour calculer la distance entre deux points (formule du grand cercle)
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Rayon de la Terre en km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            }
+
+            // Géolocalisation de l'utilisateur
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    // Centrer la carte sur la position de l'utilisateur
+                    map.setView([userLat, userLng], 8);
+
+                    // Ajouter un marqueur pour la position de l'utilisateur
+                    const userMarker = L.marker([userLat, userLng]).addTo(map)
+                        .bindPopup("Vous êtes ici").openPopup();
+
+                    // Ajouter un cercle autour de la position représentant la précision
+                    L.circle([userLat, userLng], {radius: accuracy}).addTo(map)
+                        .bindPopup("Précision : " + accuracy + " mètres");
+
+                    // Calculer la distance entre Marseille et la position de l'utilisateur
+                    const distance = calculateDistance(userLat, userLng, marseilleLatLng[0], marseilleLatLng[1]);
+                    document.getElementById('distance').textContent = distance.toFixed(2);
+
+                    // Tracer un segment entre Marseille et la position de l'utilisateur
+                    L.polyline([marseilleLatLng, [userLat, userLng]], {color: 'green'}).addTo(map);
+                }, function (error) {
+                    console.error("Erreur de géolocalisation : ", error);
+                });
+            } else {
+                alert("Votre navigateur ne supporte pas la géolocalisation");
+            }
+        });
+    </script>
+</body>
+</html>

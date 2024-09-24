@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice 3 - Ajouter des données GeoJson</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carte avec GeoJSON et Route MapQuest</h1>
+    <div id="map"></div>
+
+    <script>
+        // Initialisation de la carte centrée sur Nice
+        const map = L.map('map').setView([43.7102, 7.2620], 12);
+
+        // Ajouter des tuiles de CartoDB Positron
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & CartoDB'
+        }).addTo(map);
+
+        // Charger des données GeoJSON
+        const geojsonUrl = 'https://geo.api.gouv.fr/communes?codeRegion=93&fields=nom,code,codesPostaux,siren,codeEpci,codeDepartement,codeRegion,population&format=geojson&geometry=centre';
+        
+        // Charger et ajouter les données GeoJSON à la carte
+        fetch(geojsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data).addTo(map);
+            })
+            .catch(error => console.error("Erreur lors du chargement du GeoJSON: ", error));
+
+
+        // Ajouter un trajet en utilisant l'API MapQuest
+        const mapQuestKey = 'tR2C6osuQcc3RoWnxDMXF6FACtNAzMl8';
+        const from = '43.7102,7.2620';  // Nice
+        const to = '43.2965,5.3698';  // Marseille
+
+        const routeUrl = `https://www.mapquestapi.com/directions/v2/route?key=${mapQuestKey}&from=${from}&to=${to}&outFormat=json&routeType=fastest`;
+
+        fetch(routeUrl)
+            .then(response => response.json())
+            .then(data => {
+                const routeCoordinates = data.route.shape.shapePoints;
+
+                // Convertir les coordonnées en paires latitude-longitude
+                const latlngs = [];
+                for (let i = 0; i < routeCoordinates.length; i += 2) {
+                    latlngs.push([routeCoordinates[i], routeCoordinates[i + 1]]);
+                }
+
+                // Ajouter la route à la carte
+                L.polyline(latlngs, {color: 'blue'}).addTo(map)
+                    .bindPopup('Route entre Nice et Marseille');
+            })
+            .catch(error => console.error("Erreur lors de la récupération de l'itinéraire: ", error));
+    </script>
+</body>
+</html>
