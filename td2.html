@@ -88,8 +88,7 @@
     </div>
 
     <script>
-        if (navigator.geolocation) {
-            function showInitialPosition(position) {
+        function showInitialPosition(position) {
                 document.getElementById('lat-initial').textContent = position.coords.latitude;
                 document.getElementById('long-initial').textContent = position.coords.longitude;
                 document.getElementById('alt-initial').textContent = position.coords.altitude || 'Non disponible';
@@ -115,11 +114,16 @@
                 alert("Erreur de géolocalisation : " + error.message);
             }
 
-            navigator.geolocation.getCurrentPosition(showInitialPosition, showError);
-            navigator.geolocation.watchPosition(updateRealTimePosition, showError);
-        } else {
-            alert("La géolocalisation n'est pas supportée par ce navigateur.");
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showInitialPosition, showError);
+                navigator.geolocation.watchPosition(updateRealTimePosition, showError);
+            } else {
+                alert("La géolocalisation n'est pas supportée par ce navigateur.");
+            }
+        });
+
+        
     </script>
 </body>
 </html>

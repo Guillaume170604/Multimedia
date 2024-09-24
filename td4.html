@@ -35,16 +35,16 @@
             margin-bottom: 20px;
         }
 
-        #drawingArea {
+        #drawingCanvas {
             border: 2px solid #4a90e2;
             border-radius: 10px;
             background-color: #ffffff;
             width: 100%;
             max-width: 600px;
             height: 400px;
-            position: relative;
             cursor: crosshair;
         }
+
 
         .coordinates {
             font-size: 1.1em;
@@ -61,73 +61,92 @@
             <p class="coordinates"><strong>Position Y : </strong><span id="posY">0</span></p>
         </div>
         <button id="Clear" onclick="clearDrawing()">Effacer</button>
-        <div id="drawingArea"></div>
+        <canvas id="drawingCanvas"></canvas>
     </div>
 
     <script>
-        const drawingArea = document.getElementById('drawingArea');
-        const posXElement = document.getElementById('posX');
-        const posYElement = document.getElementById('posY');
-        const eventTypeElement = document.getElementById('eventType');
+        document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('drawingCanvas');
+    const context = canvas.getContext('2d');
+    const posXElement = document.getElementById('posX');
+    const posYElement = document.getElementById('posY');
+    const eventTypeElement = document.getElementById('eventType');
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 
-        let isDrawing = false;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
 
-        function updateInfo(event) {
-            const rect = drawingArea.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
+    function updateInfo(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-            posXElement.textContent = x.toFixed(2);
-            posYElement.textContent = y.toFixed(2);
-            eventTypeElement.textContent = event.type;
-        }
+        posXElement.textContent = x.toFixed(2);
+        posYElement.textContent = y.toFixed(2);
+        eventTypeElement.textContent = event.type;
+        return { x, y };
+    }
 
-        function startDrawing(event) {
-            updateInfo(event);
-            isDrawing = true;
+    function startDrawing(event) {
+        const { x, y } = updateInfo(event);
+        isDrawing = true;
+        lastX = x;
+        lastY = y;
+        event.preventDefault();
+    }
+
+    function draw(event) {
+        if (!isDrawing) return;
+
+        const { x, y } = updateInfo(event);
+
+        context.beginPath();
+        context.moveTo(lastX, lastY);
+        context.lineTo(x, y);
+        context.strokeStyle = '#4a90e2';
+        context.lineWidth = 5;
+        context.stroke();
+
+        lastX = x;
+        lastY = y;
+        event.preventDefault();
+    }
+
+    function stopDrawing(event) {
+        isDrawing = false;
+        event.preventDefault();
+    }
+
+    function clearDrawing() {
+        canvas.width = canvas.width;
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+
+    // Pour les événements tactiles
+    canvas.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 0) {
             event.preventDefault();
+            startDrawing(event.touches[0]);
         }
-
-        function clearDrawing() {
-            const drawingArea = document.getElementById('drawingArea');
-            drawingArea.innerHTML = '';
-        }
-
-
-        function draw(event) {
-            if (!isDrawing) return;
-            updateInfo(event);
-
-            const rect = drawingArea.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-
-            const dot = document.createElement('div');
-            dot.style.position = 'absolute';
-            dot.style.width = '5px';
-            dot.style.height = '5px';
-            dot.style.backgroundColor = '#4a90e2';
-            dot.style.borderRadius = '50%';
-            dot.style.left = `${x}px`;
-            dot.style.top = `${y}px`;
-
-            drawingArea.appendChild(dot);
+    });
+    canvas.addEventListener('touchmove', function(event) {
+        if (event.touches.length > 0) {
             event.preventDefault();
+            draw(event.touches[0]);
         }
+    });
+    canvas.addEventListener('touchend', stopDrawing);
 
-        function stopDrawing(event) {
-            isDrawing = false;
-            event.preventDefault();
-        }
+    // Ajouter l'événement de clic pour le bouton de nettoyage
+    document.getElementById('clearButton').addEventListener('click', clearDrawing);
+});
 
-        drawingArea.addEventListener('mousedown', startDrawing);
-        drawingArea.addEventListener('mousemove', draw);
-        drawingArea.addEventListener('mouseup', stopDrawing);
-
-        // Pour les événements tactiles
-        drawingArea.addEventListener('touchstart', startDrawing);
-        drawingArea.addEventListener('touchmove', draw);
-        drawingArea.addEventListener('touchend', stopDrawing);
     </script>
 </body>
 </html>
