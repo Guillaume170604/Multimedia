@@ -10,6 +10,7 @@
     </style>
 </head>
 <body>
+    <button id="Demarrer" onclick="requestPermission()">Démarrer</button>
     <script type="module">
         import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
 
@@ -108,6 +109,24 @@
             }
 
             rainParticles.geometry.attributes.position.needsUpdate = true;
+        }
+
+         // Fonction pour demander la permission
+         function requestPermission() {
+            if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                        } else {
+                            alert('Permission refusée pour DeviceOrientation.');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Pour les navigateurs qui ne nécessitent pas de permission explicite
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
         }
 
         function animate() {
