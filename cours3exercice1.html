@@ -10,7 +10,7 @@
     </style>
 </head>
 <body>
-    <button id="Demarrer" onclick="requestPermission()">Démarrer</button>
+    <button id="Demarrer">Démarrer</button>
     <script type="module">
         import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
 
@@ -55,12 +55,21 @@
             // Add event listeners
             window.addEventListener('resize', onWindowResize, false);
             window.addEventListener('deviceorientation', onDeviceOrientation, true);
+
+            // Ajoute l'écouteur d'événements pour le bouton
+            document.getElementById('Demarrer').addEventListener('click', requestPermission);
         }
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function handleOrientation(event) {
+            document.getElementById('alpha').textContent = event.alpha.toFixed(2);
+            document.getElementById('beta').textContent = event.beta.toFixed(2);
+            document.getElementById('gamma').textContent = event.gamma.toFixed(2);
         }
 
         function createRain() {
