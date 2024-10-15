@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours 4 - Exercice 1</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100%; display: block; }
+    </style>
+</head>
+<body>
+
+<!-- Inclusion de Babylon.js -->
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+
+<script>
+    // Création de la scène
+    const canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    const engine = new BABYLON.Engine(canvas, true);
+
+    const createScene = function () {
+        const scene = new BABYLON.Scene(engine);
+        
+        // Caméra
+        const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 10, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+
+        // Lumière
+        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
+
+        // Création d'une sphère représentant la Terre
+        const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 10 }, scene);
+        sphere.position.y = 0;
+
+        // Ajout d'une texture à la sphère
+        const materialSphere = new BABYLON.StandardMaterial("earthMaterial", scene);
+        materialSphere.diffuseTexture = new BABYLON.Texture("earth.jpg", scene); // URL de la texture
+        materialSphere.diffuseTexture.vScale = -1;  // Ajustement pour correspondre à l'orientation
+        materialSphere.diffuseTexture.uScale = -1;  // Ajustement pour correspondre à l'orientation
+        sphere.material = materialSphere; // Applique le matériau à la sphère
+
+        // Fonction pour ajouter un point bleu à la position
+        const addPointAtPosition = function(latitude, longitude, flag) {
+            // Conversion de latitude/longitude en radians
+            const latRad = BABYLON.Tools.ToRadians(latitude);
+            const lonRad = - BABYLON.Tools.ToRadians(longitude) + Math.PI;
+
+            // Rayon de la Terre (ici le diamètre est de 10, donc rayon = 5)
+            const earthRadius = 5;
+
+            // Calcul des coordonnées 3D pour la position (X, Y, Z)
+            const x = earthRadius * Math.cos(latRad) * Math.sin(lonRad); // Inversion de X et Z
+            const y = earthRadius * Math.sin(latRad);
+            const z = earthRadius * Math.cos(latRad) * Math.cos(lonRad); // Inversion de Z
+
+            // Création d'une petite sphère pour représenter la position
+            const point = BABYLON.MeshBuilder.CreateBox("box", {size:0.1,witdh:0.2,height:0.1}, scene);
+            point.position = new BABYLON.Vector3(z, y, -x); // Ajout de l'inversion dans les axes
+
+            // Ajout d'un matériau de couleur à la petite sphère
+            const materialPoint = new BABYLON.StandardMaterial("pointMaterial", scene);
+            materialPoint.diffuseTexture = new BABYLON.Texture(flag, scene); // URL de la texture
+            point.material = materialPoint;
+        }
+
+        // Récupérer la position actuelle de l'utilisateur et ajouter un point rouge
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                addPointAtPosition(latitude, longitude, "path/to/red_texture.png"); // Rouge pour l'utilisateur
+            }, function(error) {
+                console.error("Erreur de géolocalisation: ", error);
+            });
+        } else {
+            console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+        }
+
+        // Requête API pour obtenir la liste des pays
+        fetch('https://restcountries.com/v3.1/all')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(country => {
+                    if (country.latlng) {
+                        const flag = country.flags.png;
+                        const latitude = country.latlng[0];
+                        const longitude = country.latlng[1];
+                        addPointAtPosition(latitude, longitude, flag); 
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération des données des pays: ", error);
+            });
+
+        return scene;
+    }; 
+
+    const scene = createScene(); 
+
+    // Rendu de la scène
+    engine.runRenderLoop(function () {
+        scene.render();
+    });
+
+    // Gestion du redimensionnement de la fenêtre
+    window.addEventListener('resize', function () {
+        engine.resize();
+    });
+
+</script>
+
+</body>
+</html>
